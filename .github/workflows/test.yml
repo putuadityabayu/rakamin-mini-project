@@ -1,0 +1,49 @@
+name: Testing
+
+on:
+  pull_request:
+    branches:
+      - main
+  push:
+    branches:
+      - main
+
+jobs:
+  testing:
+    runs-on: ubuntu-latest
+    env:
+      JWT_SIGNATURE_KEY: 'This is secret key'
+      DB_HOST: localhost
+      DB_USER: root
+      DB_PASS: root
+      DB_PORT: 3306
+      DB_NAME: rakamin
+    steps:
+      - uses: actions/checkout@v3
+      - name: Set up Go
+        uses: actions/setup-go@v2
+        with:
+          go-version: 1.19
+      - name: Setup Mysql
+        run: |
+          sudo systemctl start mysql.service
+          mysql -u$DB_USER -p$DB_PASS -e 'CREATE DATABASE IF NOT EXISTS rakamin;'
+          mysql -u$DB_USER -p$DB_PASS $DB_NAME < ./database.sql
+      - name: Setup Golang caches
+        uses: actions/cache@v3
+        with:
+          # In order:
+          # * Module download cache
+          # * Build cache (Linux)
+          # * Build cache (Mac)
+          # * Build cache (Windows)
+          path: |
+            ~/go/pkg/mod
+            ~/.cache/go-build
+          key: ${{ runner.os }}-go-1.19-${{ hashFiles('**/go.sum') }}
+          restore-keys: |
+            ${{ runner.os }}-go-1.19-
+      - name: Build
+        run: go build -v ./...
+      - name: Test
+        run: go test -v ./...
