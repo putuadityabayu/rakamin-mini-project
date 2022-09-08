@@ -1,13 +1,20 @@
 package models
 
 type Context struct {
-	User *Users
+	User Users
 }
 
 type Pagination struct {
-	Page     int64 `query:"page" json:"page"`
-	PageSize int64 `query:"page_size" json:"page_size"`
-	Start    int64 `query:"-" json:"-"`
+	Page      int64 `query:"page" json:"page"`
+	PageSize  int64 `query:"page_size" json:"page_size"`
+	Start     int64 `query:"-" json:"-"`
+	Total     int64 `query:"-" json:"total"`
+	TotalPage int64 `query:"-" json:"total_page"`
+}
+
+type PaginationResponse[T any] struct {
+	Pagination
+	Data []T `json:"data"`
 }
 
 func (c *Pagination) Format() (err error) {

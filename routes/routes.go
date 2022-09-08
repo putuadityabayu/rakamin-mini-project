@@ -36,11 +36,23 @@ func SetupRouters() *fiber.App {
 		return c.Status(fiber.StatusOK).JSON(fiber.Map{"error": false, "message": "API Uptime"})
 	})
 
+	/*app.Get("/adduser", func(c *fiber.Ctx) error {
+		user := models.Users{
+			Name:     "User 3",
+			UserName: "user3",
+			Password: "user3",
+		}
+		config.DB.Create(&user)
+		return c.Status(fiber.StatusOK).JSON(user)
+	})*/
+
 	// Login
 	app.Post("/login", controllers.Login)
 
 	// Add Authorization
 	//app.Use(middleware.Authorization)
+	conv := app.Group("/conversation", middleware.Authorization)
+	SetupConversation(conv)
 
 	// 404 routes
 	app.Use(func(c *fiber.Ctx) error {

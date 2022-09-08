@@ -54,7 +54,7 @@ func Authorization(c *fiber.Ctx) error {
 			}
 
 			// Set gofiber context
-			ctx.User = &user
+			ctx.User = user
 			c.Locals("ctx", ctx)
 
 			// Next
