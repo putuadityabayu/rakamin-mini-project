@@ -20,6 +20,7 @@ var (
 	LOGIN_EXPIRATION_DURATION = time.Duration(1) * time.Hour
 	JWT_SIGNING_METHOD        = jwt.SigningMethodHS256
 	DB                        *gorm.DB
+	NODE_ENV                  string
 )
 
 func setupDatabase() {
@@ -31,11 +32,15 @@ func setupDatabase() {
 	DB_NAME := os.Getenv("DB_NAME")
 
 	URL := fmt.Sprintf("%s:%s@tcp(%s:%s)/%s?charset=utf8&parseTime=True&loc=Local", DB_USER, DB_PASS, DB_HOST, DB_PORT, DB_NAME)
+	loggers := logger.Error
+	if NODE_ENV == "development" {
+		loggers = logger.Info
+	}
 	newLogger := logger.New(
 		log.New(os.Stdout, "\r\n", log.LstdFlags),
 		logger.Config{
 			SlowThreshold:             time.Second,
-			LogLevel:                  logger.Info,
+			LogLevel:                  loggers,
 			IgnoreRecordNotFoundError: true,
 			Colorful:                  true,
 		},
@@ -53,5 +58,6 @@ func setupDatabase() {
 func Initialization() {
 	jwtToken := os.Getenv("JWT_SIGNATURE_KEY")
 	JWT_SIGNATURE_KEY = []byte(jwtToken)
+	NODE_ENV = os.Getenv("NODE_ENV")
 	setupDatabase()
 }

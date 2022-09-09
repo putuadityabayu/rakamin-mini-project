@@ -63,7 +63,8 @@ func NewMessage(c *fiber.Ctx) error {
 			Messages:             post.Message,
 			Sender:               ctx.User,
 		}
-		msg.ConversationInternal.Unread = 1
+		msg.ConversationInternal.Unread = 0
+		msg.Read = false
 		databaseErr = db.Save(&msg).Error
 	} else {
 		msg = models.Messages{
@@ -73,7 +74,8 @@ func NewMessage(c *fiber.Ctx) error {
 			SenderID:             ctx.User.ID,
 			Sender:               ctx.User,
 		}
-		msg.ConversationInternal.Unread = 1
+		msg.ConversationInternal.Unread = 0
+		msg.Read = false
 		databaseErr = db.Omit(clause.Associations).Create(&msg).Error
 	}
 
@@ -127,6 +129,7 @@ func ReplyMessage(c *fiber.Ctx) error {
 		Sender:               ctx.User,
 	}
 	msg.ConversationInternal.Unread = 1
+	msg.Read = false
 
 	if err := db.Omit(clause.Associations).Create(&msg).Error; err != nil {
 		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{"error": "Internal server error"})
@@ -159,7 +162,7 @@ func ListMessages(c *fiber.Ctx) error {
 	db.Model(&models.Messages{}).Limit(int(query.PageSize)).Offset(int(query.Start)).Where("conversation_id = ? AND sender_id != ?", id, ctx.User.ID).Update("read", true)
 
 	db.
-		Select(`messages.id,messages.conversation_id,messages.timestamp,messages.sender_id,messages.messages,IF(messages.sender_id = ?,'1',messages.read) as 'read'`, ctx.User.ID).
+		// Select(`messages.id,messages.conversation_id,messages.timestamp,messages.sender_id,messages.messages,IF(messages.sender_id != ?,'1',messages.read) as 'read'`, ctx.User.ID).
 		Joins("JOIN conversations c on c.id = messages.conversation_id").
 		Joins("JOIN conversations_users cu on cu.conversation_id = c.id").
 		Joins("JOIN conversations_users cuu on cuu.conversation_id = c.id").

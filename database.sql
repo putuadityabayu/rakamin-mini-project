@@ -85,7 +85,7 @@ CREATE TABLE `messages` (
   CONSTRAINT `fk_conversations_messages` FOREIGN KEY (`conversation_id`) REFERENCES `conversations` (`id`),
   CONSTRAINT `fk_messages_conversation` FOREIGN KEY (`conversation_id`) REFERENCES `conversations` (`id`),
   CONSTRAINT `fk_messages_sender` FOREIGN KEY (`sender_id`) REFERENCES `users` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=31 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=32 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -94,7 +94,7 @@ CREATE TABLE `messages` (
 
 LOCK TABLES `messages` WRITE;
 /*!40000 ALTER TABLE `messages` DISABLE KEYS */;
-INSERT INTO `messages` VALUES (8,11,1,'2022-09-09 10:58:18.546','tes',1),(20,22,0,'2022-09-09 13:32:18.786','tes user 3',1),(29,22,0,'2022-09-09 13:56:08.861','tes user 3 msg 2',1),(30,11,1,'2022-09-09 14:01:04.932','tes user 2 msg 2',1);
+INSERT INTO `messages` VALUES (8,11,1,'2022-09-09 10:58:18.546','tes',1),(20,22,0,'2022-09-09 13:32:18.786','tes user 3',1),(29,22,0,'2022-09-09 13:56:08.861','tes user 3 msg 2',1),(30,11,1,'2022-09-09 14:01:04.932','tes user 2 msg 2',1),(31,11,0,'2022-09-09 15:36:49.448','Tes reply to user 1 from user 2',2);
 /*!40000 ALTER TABLE `messages` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -133,4 +133,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2022-09-09 14:27:44
+-- Dump completed on 2022-09-09 16:22:18

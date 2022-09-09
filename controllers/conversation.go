@@ -20,12 +20,14 @@ func ListConversation(c *fiber.Ctx) error {
 	var conv []models.Conversation
 
 	query_max := db.Table("messages").Select("MAX(messages.timestamp) as latest").Group("conversation_id")
-	query_count := db.Table("messages").Select("conversation_id,COUNT(`read`) as unread").Group("conversation_id").Where("`read` = ?", "0")
+	query_count := db.Table("messages").Select("conversation_id,COUNT(`read`) as unread").Group("conversation_id").Where("sender_id != ? AND `read` = ?", ctx.User.ID, "0")
 	if err := db.
 		Select(`conversations.*,IF(msg.unread = NULL,0,msg.unread) as unread`).
 		Preload("Users").
 		Preload("Messages", func(g *gorm.DB) *gorm.DB {
-			return g.Preload("Sender").Joins("JOIN (?) m ON m.latest = messages.timestamp", query_max)
+			return g.
+				Preload("Sender").
+				Joins("JOIN (?) m ON m.latest = messages.timestamp", query_max)
 		}).
 		Joins("JOIN conversations_users on conversations_users.conversation_id = conversations.id").
 		Joins("JOIN conversations_users c on c.conversation_id = conversations.id").
