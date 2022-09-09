@@ -11,4 +11,5 @@ func SetupConversation(r fiber.Router) {
 	r.Delete("/:id", controllers.DeleteConversation)
 	r.Get("/:id", controllers.ListMessages)
 	r.Post("/:id", controllers.ReplyMessage)
+	r.Delete("/:id/:msg_id", controllers.DeleteMessage)
 }

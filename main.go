@@ -11,9 +11,6 @@ import (
 )
 
 func newApp() *fiber.App {
-	// Setup Database
-	config.Initialization()
-	models.SetupModels()
 	// Setup gofiber
 	r := routes.SetupRouters()
 	return r
@@ -24,6 +21,9 @@ func main() {
 	if err != nil {
 		log.Fatalf("Error loading .env file: %s", err.Error())
 	}
+	// Setup Database
+	config.Initialization()
+	models.SetupModels()
 	err = newApp().Listen(":3000")
 	if err != nil {
 		panic(err)

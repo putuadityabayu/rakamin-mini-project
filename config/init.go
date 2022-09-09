@@ -16,7 +16,7 @@ var (
 	ENV                       string
 	JWT_ISSUER                = "https://rakamin.com"
 	APPLICATION_NAME          = "Rakamin Mini Project"
-	JWT_SIGNATURE_KEY         = []byte("the secret of kalimdor")
+	JWT_SIGNATURE_KEY         []byte
 	LOGIN_EXPIRATION_DURATION = time.Duration(1) * time.Hour
 	JWT_SIGNING_METHOD        = jwt.SigningMethodHS256
 	DB                        *gorm.DB

@@ -114,9 +114,9 @@ func ReplyMessage(c *fiber.Ctx) error {
 	if err := db.Preload("Users").
 		Select("conversations.*,'0' as unread").
 		Joins("JOIN conversations_users on conversations_users.conversation_id = conversations.id").
-		Joins("JOIN conversations_users c on c.conversation_id = conversations.id").
+		//Joins("JOIN conversations_users c on c.conversation_id = conversations.id").
 		Joins("JOIN users on conversations_users.users_id = users.id").
-		Where("conversations.id = ?", id).
+		Where("conversations.id = ? AND conversations_users.users_id = ?", id, ctx.User.ID).
 		First(&conv).Error; err != nil {
 		return c.Status(fiber.StatusNotFound).JSON(fiber.Map{"error": "Conversation not found"})
 	}
@@ -128,7 +128,7 @@ func ReplyMessage(c *fiber.Ctx) error {
 		SenderID:             ctx.User.ID,
 		Sender:               ctx.User,
 	}
-	msg.ConversationInternal.Unread = 1
+	msg.ConversationInternal.Unread = 0
 	msg.Read = false
 
 	if err := db.Omit(clause.Associations).Create(&msg).Error; err != nil {
@@ -162,12 +162,11 @@ func ListMessages(c *fiber.Ctx) error {
 	db.Model(&models.Messages{}).Limit(int(query.PageSize)).Offset(int(query.Start)).Where("conversation_id = ? AND sender_id != ?", id, ctx.User.ID).Update("read", true)
 
 	db.
-		// Select(`messages.id,messages.conversation_id,messages.timestamp,messages.sender_id,messages.messages,IF(messages.sender_id != ?,'1',messages.read) as 'read'`, ctx.User.ID).
 		Joins("JOIN conversations c on c.id = messages.conversation_id").
 		Joins("JOIN conversations_users cu on cu.conversation_id = c.id").
-		Joins("JOIN conversations_users cuu on cuu.conversation_id = c.id").
+		//Joins("JOIN conversations_users cuu on cuu.conversation_id = c.id").
 		Where("c.id = ? AND cu.users_id = ?", id, ctx.User.ID).
-		Or("c.id = ? AND cuu.users_id = ?", id, ctx.User.ID).
+		//Or("c.id = ? AND cuu.users_id = ?", id, ctx.User.ID).
 		Group("messages.id").
 		Order("messages.timestamp DESC").
 		Limit(int(query.PageSize)).Offset(int(query.Start)).Preload("Sender").Find(&msg)
@@ -175,9 +174,9 @@ func ListMessages(c *fiber.Ctx) error {
 	db.Table("messages").Select("count(*)").
 		Joins("JOIN conversations c on c.id = messages.conversation_id").
 		Joins("JOIN conversations_users cu on cu.conversation_id = c.id").
-		Joins("JOIN conversations_users cuu on cuu.conversation_id = c.id").
+		//Joins("JOIN conversations_users cuu on cuu.conversation_id = c.id").
 		Where("c.id = ? AND cu.users_id = ?", id, ctx.User.ID).
-		Or("c.id = ? AND cuu.users_id = ?", id, ctx.User.ID).
+		//Or("c.id = ? AND cuu.users_id = ?", id, ctx.User.ID).
 		Group("messages.id").
 		Count(&query.Total)
 	query.TotalPage = int64(math.Ceil(float64(query.Total) / float64(query.PageSize)))
@@ -188,4 +187,28 @@ func ListMessages(c *fiber.Ctx) error {
 	}
 
 	return c.Status(fiber.StatusOK).JSON(result)
+}
+
+func DeleteMessage(c *fiber.Ctx) error {
+	ctx := c.Locals("ctx").(*models.Context)
+	db := config.DB
+	id_str, msg_id_str := c.Params("id", "notfound"), c.Params("msg_id", "notfound")
+
+	id_int, err := strconv.Atoi(id_str)
+	if err != nil {
+		return c.Status(fiber.StatusNotFound).JSON(fiber.Map{"error": "Conversation not found"})
+	}
+	msg_id_int, err := strconv.Atoi(msg_id_str)
+	if err != nil {
+		return c.Status(fiber.StatusNotFound).JSON(fiber.Map{"error": "Conversation not found"})
+	}
+
+	id := uint64(id_int)
+	msg_id := uint64(msg_id_int)
+
+	if err := db.Select("Users", "ConversationInternal").Delete(&models.Messages{ID: msg_id, ConversationInternal: models.Conversation{ID: id, Users: []models.Users{ctx.User}}}).Error; err != nil {
+		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{"error": "Internal server error"})
+	}
+
+	return c.Status(fiber.StatusOK).JSON(fiber.Map{"success": true})
 }
