@@ -25,7 +25,7 @@ DROP TABLE IF EXISTS `conversations`;
 CREATE TABLE `conversations` (
   `id` bigint unsigned NOT NULL AUTO_INCREMENT,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=31 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -34,6 +34,7 @@ CREATE TABLE `conversations` (
 
 LOCK TABLES `conversations` WRITE;
 /*!40000 ALTER TABLE `conversations` DISABLE KEYS */;
+INSERT INTO `conversations` VALUES (11),(22);
 /*!40000 ALTER TABLE `conversations` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -60,6 +61,7 @@ CREATE TABLE `conversations_users` (
 
 LOCK TABLES `conversations_users` WRITE;
 /*!40000 ALTER TABLE `conversations_users` DISABLE KEYS */;
+INSERT INTO `conversations_users` VALUES (11,1),(22,1),(11,2),(22,3);
 /*!40000 ALTER TABLE `conversations_users` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -83,7 +85,7 @@ CREATE TABLE `messages` (
   CONSTRAINT `fk_conversations_messages` FOREIGN KEY (`conversation_id`) REFERENCES `conversations` (`id`),
   CONSTRAINT `fk_messages_conversation` FOREIGN KEY (`conversation_id`) REFERENCES `conversations` (`id`),
   CONSTRAINT `fk_messages_sender` FOREIGN KEY (`sender_id`) REFERENCES `users` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=31 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -92,6 +94,7 @@ CREATE TABLE `messages` (
 
 LOCK TABLES `messages` WRITE;
 /*!40000 ALTER TABLE `messages` DISABLE KEYS */;
+INSERT INTO `messages` VALUES (8,11,1,'2022-09-09 10:58:18.546','tes',1),(20,22,0,'2022-09-09 13:32:18.786','tes user 3',1),(29,22,0,'2022-09-09 13:56:08.861','tes user 3 msg 2',1),(30,11,1,'2022-09-09 14:01:04.932','tes user 2 msg 2',1);
 /*!40000 ALTER TABLE `messages` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -117,7 +120,7 @@ CREATE TABLE `users` (
 
 LOCK TABLES `users` WRITE;
 /*!40000 ALTER TABLE `users` DISABLE KEYS */;
-INSERT INTO `users` VALUES (1,'User 1','user1','24c9e15e52afc47c225b757e7bee1f9d'),(2,'User 2','user2','7e58d63b60197ceb55a1c487989a3720'),(8,'User 3','user3','92877af70a45fd6a2ed7fe81e1236b78');
+INSERT INTO `users` VALUES (1,'User 1','user1','24c9e15e52afc47c225b757e7bee1f9d'),(2,'User 2','user2','7e58d63b60197ceb55a1c487989a3720'),(3,'User 3','user3','92877af70a45fd6a2ed7fe81e1236b78');
 /*!40000 ALTER TABLE `users` ENABLE KEYS */;
 UNLOCK TABLES;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
@@ -130,4 +133,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2022-09-09  4:27:32
+-- Dump completed on 2022-09-09 14:27:44

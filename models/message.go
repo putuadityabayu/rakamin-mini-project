@@ -9,8 +9,8 @@ type Messages struct {
 	Read                 bool         `json:"read" gorm:"default:false"`
 	Timestamp            time.Time    `json:"timestamp" gorm:"autoCreateTime"`
 	Messages             string       `json:"message" gorm:"not null"`
-	ConversationInternal Conversation `json:"-" gorm:"foreignKey:ConversationID"`
-	Sender               Users        `json:"sender" gorm:"references:ID"`
+	ConversationInternal Conversation `json:"-" gorm:"foreignKey:ConversationID;constraint:OnUpdate:CASCADE,OnDelete:CASCADE"`
+	Sender               Users        `json:"sender" gorm:"foreignKey:SenderID;references:ID;constraint:OnUpdate:CASCADE,OnDelete:CASCADE"`
 }
 
 type MessagesWithConversation struct {

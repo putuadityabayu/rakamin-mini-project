@@ -50,7 +50,7 @@ func SetupRouters() *fiber.App {
 	app.Post("/login", controllers.Login)
 
 	// Add Authorization
-	//app.Use(middleware.Authorization)
+	app.Get("/me", middleware.Authorization, controllers.Me)
 	conv := app.Group("/conversation", middleware.Authorization)
 	SetupConversation(conv)
 
