@@ -27,6 +27,7 @@ jobs:
           port: ${{ secrets.SSH_PORT }}
           script_stop: true
           script: |
+            source ~/.bash_profile
             cd ~/go/src/rakamin.com/rakamin-mini-project
             ./script.exp
             git pull origin main
