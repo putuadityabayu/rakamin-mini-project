@@ -15,7 +15,7 @@ jobs:
       name: production
       url: https://rakamin-mini-project.portalnesia.com
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
 
       - name: Deploy Using SSH
         uses: appleboy/ssh-action@master
@@ -25,12 +25,13 @@ jobs:
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           passphrase: ${{ secrets.SSH_PASSPHRASE }}
           port: ${{ secrets.SSH_PORT }}
+          script_stop: true
           script: |
             cd ~/go/src/rakamin.com/rakamin-mini-project
             ./script.exp
             git pull origin main
             git status
-            go mod tidy
-            go build -o rakamin-mini-project main.go
-            systemctl --user restart rakamin
+            /usr/local/go/bin/go mod tidy
+            /usr/local/go/bin/go build -o rakamin-mini-project main.go
+            /bin/systemctl --user restart rakamin
             
