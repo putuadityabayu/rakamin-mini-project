@@ -1,8 +1,11 @@
 package routes
 
 import (
+	"time"
+
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/middleware/compress"
+	"github.com/gofiber/fiber/v2/middleware/limiter"
 	"github.com/gofiber/fiber/v2/middleware/recover"
 	"rakamin.com/project/config"
 	"rakamin.com/project/controllers"
@@ -31,6 +34,14 @@ func SetupRouters() *fiber.App {
 	app.Use(compress.New(compress.Config{
 		Level: compress.LevelBestSpeed,
 	}))
+
+	if config.NODE_ENV == "production" {
+		app.Use(limiter.New(limiter.Config{
+			Max:               15,
+			Expiration:        30 * time.Second,
+			LimiterMiddleware: limiter.SlidingWindow{},
+		}))
+	}
 
 	app.Get("/", func(c *fiber.Ctx) error {
 		return c.Status(fiber.StatusOK).JSON(fiber.Map{"error": false, "message": "API Uptime"})

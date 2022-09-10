@@ -29,7 +29,7 @@ Rakamin Mini Project Backend
     go run main.go
     ```
 
-6. Server running on ***localhost:3000***
+6. Server running on ***localhost:$PORT***
 
 -----
 
