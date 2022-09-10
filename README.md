@@ -1,6 +1,8 @@
 # rakamin-mini-project
 Rakamin Mini Project Backend
 
+[Live Server](https://rakamin-mini-project.portalnesia.com)
+
 ## Installation
 
 1. Clone Repository
@@ -67,7 +69,7 @@ As a user, I want to be able to send message to other user, so that I will be ab
 
     Send POST request to `/login` endpoint with User data above.
 
-    Body:
+    Example request body:
     ```json
     {
       "username":"user1",
@@ -114,7 +116,7 @@ As a user, I want to be able to send message to other user, so that I will be ab
       ```json
       {
         "id": 30,
-        "read": false,
+        "read_status": false,
         "timestamp": "2022-09-09T14:01:04.932+07:00",
         "message": "Example message",
         "sender": {
@@ -162,7 +164,7 @@ As a user, I want to be able to reply message in existing conversation, so that 
 
     Send `POST` request to `/conversation/:id`, where `id` is conversation ID.
 
-    Body:
+    Example request body:
     ```json
     {
       "message":"Example reply message"
@@ -218,7 +220,7 @@ As a user, I want to be able to list messages from specific user, so that I will
 
 
     Example response:
-    ```json
+    ```js
     {
       "page": 1, // Requested page
       "page_size": 15, // Size of data in one call requests
@@ -257,7 +259,8 @@ As a user, I want to be able to list conversations where I involved, so that I w
     - `page_size`: Size of data in one call requests. Default 15
 
     Example response:
-    ```json
+    ```js
+    // authorization_user is the user associated with the authorization header token
     {
       "page": 1, // Requested page
       "page_size": 15, // Size of data in one call requests
@@ -266,7 +269,7 @@ As a user, I want to be able to list conversations where I involved, so that I w
       "data": [
         {
           "id": 11,
-          "unread": 0, // Unread count
+          "unread": 0, // Unread count. Number of messages (in this conversation) that have not been read by authorization_user
           "users": [ // Conversation participants information
             {
               "id": 1,
@@ -281,7 +284,7 @@ As a user, I want to be able to list conversations where I involved, so that I w
           ],
           "message": {
             "id": 31,
-            "read_status": true,
+            "read_status": true, // Status whether the message has been read or not read by the recipient 
             "timestamp": "2022-09-09T15:36:49.448+07:00",
             "message": "Tes reply to user 1 from user 2",
             "sender": {
@@ -301,4 +304,4 @@ As a user, I want to be able to list conversations where I involved, so that I w
 ## TODO
 
 - [x] Added CI
-- [ ] Added CD
+- [x] Added CD

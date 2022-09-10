@@ -18,3 +18,5 @@
 *-credentials.json
 gha-creds-*.json
 *.exp
+# Executable files
+rakamin-mini-project
