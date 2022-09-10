@@ -29,7 +29,7 @@ Rakamin Mini Project Backend
     go run main.go
     ```
 
-6. Server running on ***localhost:3000***
+6. Server running on ***localhost:$PORT***
 
 -----
 
@@ -70,8 +70,8 @@ As a user, I want to be able to send message to other user, so that I will be ab
     Body:
     ```json
     {
-      "username":"user",
-      "password": "user"
+      "username":"user1",
+      "password": "user1"
     }
     ```
 
@@ -87,7 +87,7 @@ As a user, I want to be able to send message to other user, so that I will be ab
     }
     ```
 
-2. Authorization Endpoint
+2. Authenticated
 
     All access to the `/conversation/**` endpoint must include an authorization header:
 
@@ -124,7 +124,7 @@ As a user, I want to be able to send message to other user, so that I will be ab
         },
         "conversation": {
           "id": 11,
-          "unread": 1,
+          "unread": 0,
           "users": [
             {
               "id": 1,
@@ -156,20 +156,149 @@ As a user, I want to be able to send message to other user, so that I will be ab
 
 As a user, I want to be able to reply message in existing conversation, so that I will be able to respond previous message.
 
+1. Login with user2 account
+2. Authenticated
+3. Send message (reply) to conversation
 
+    Send `POST` request to `/conversation/:id`, where `id` is conversation ID.
+
+    Body:
+    ```json
+    {
+      "message":"Example reply message"
+    }
+    ```
+
+    Example response:
+    ```json
+    {
+      "id": 31,
+      "read_status": false,
+      "timestamp": "2022-09-09T15:36:49.448+07:00",
+      "message": "Tes reply to user 1 from user 2",
+      "sender": {
+        "id": 2,
+        "name": "User 2",
+        "username": "user2"
+      },
+      "conversation": {
+        "id": 11,
+        "unread": 0,
+        "users": [
+          {
+            "id": 1,
+            "name": "User 1",
+            "username": "user1"
+          },
+          {
+            "id": 2,
+            "name": "User 2",
+            "username": "user2"
+          }
+        ]
+      }
+    }
+    ```
 
 
 ### User Story #3
 
 As a user, I want to be able to list messages from specific user, so that I will be able to read our conversation.
 
+1. Login
+2. Authenticated
+3. List all messages in specific conversation
+
+    Send `GET` request to `/conversation/:id`, where `id` is conversation ID.
+
+    Optional query:
+
+    - `page`: Page you want to request. Default 1
+    - `page_size`: Size of data in one call requests. Default 15
+
+
+    Example response:
+    ```json
+    {
+      "page": 1, // Requested page
+      "page_size": 15, // Size of data in one call requests
+      "total": 2, // Total data
+      "total_page": 1, // Maximum pages that can be requested. Page requests larger than this value, will result in empty data
+      "data": [
+        {
+          "id": 30,
+          "read_status": true,
+          "timestamp": "2022-09-09T14:01:04.932+07:00",
+          "message": "tes user 2 msg 2",
+          "sender": {
+            "id": 1,
+            "name": "User 1",
+            "username": "user1"
+          }
+        },
+        ...messages
+      ]
+    }
+    ```
+
 ### User Story #4
 
 As a user, I want to be able to list conversations where I involved, so that I will be able to search or find user to chat with.
+
+1. Login
+2. Authenticated
+3. List all conversation
+
+    Send `GET` request to `/conversation`.
+
+    Optional query:
+
+    - `page`: Page you want to request. Default 1
+    - `page_size`: Size of data in one call requests. Default 15
+
+    Example response:
+    ```json
+    {
+      "page": 1, // Requested page
+      "page_size": 15, // Size of data in one call requests
+      "total": 2, // Total data
+      "total_page": 1, // Maximum pages that can be requested. Page requests larger than this value, will result in empty data
+      "data": [
+        {
+          "id": 11,
+          "unread": 0, // Unread count
+          "users": [ // Conversation participants information
+            {
+              "id": 1,
+              "name": "User 1",
+              "username": "user1"
+            },
+            {
+              "id": 2,
+              "name": "User 2",
+              "username": "user2"
+            }
+          ],
+          "message": {
+            "id": 31,
+            "read_status": true,
+            "timestamp": "2022-09-09T15:36:49.448+07:00",
+            "message": "Tes reply to user 1 from user 2",
+            "sender": {
+              "id": 2,
+              "name": "User 2",
+              "username": "user2"
+            }
+          }
+        },
+        ...conversations
+      ]
+    }
+    ```
 
 ------
 
 ## TODO
 
-- [ ] Added CI
+- [x] Added CI
 - [ ] Added CD

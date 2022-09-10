@@ -28,6 +28,7 @@ jobs:
       - name: Setup Mysql
         run: |
           sudo systemctl start mysql.service
+          mysql -u$DB_USER -p$DB_PASS -e 'DROP DATABASE IF EXISTS rakamin;'
           mysql -u$DB_USER -p$DB_PASS -e 'CREATE DATABASE IF NOT EXISTS rakamin;'
           mysql -u$DB_USER -p$DB_PASS $DB_NAME < ./database.sql
       - name: Setup Golang caches

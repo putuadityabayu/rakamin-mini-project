@@ -17,3 +17,4 @@
 *_test.txt
 *-credentials.json
 gha-creds-*.json
+*.exp

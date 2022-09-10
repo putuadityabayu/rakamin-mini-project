@@ -12,6 +12,27 @@ import (
 	"rakamin.com/project/models"
 )
 
+func GetToken(user *models.Users) string {
+	// Create JWT token
+	claims := jwt.RegisteredClaims{
+		Issuer:    config.APPLICATION_NAME,
+		ExpiresAt: &jwt.NumericDate{Time: time.Now().Add(config.LOGIN_EXPIRATION_DURATION)},
+		Audience:  jwt.ClaimStrings{config.JWT_ISSUER},
+		Subject:   fmt.Sprintf("%d", user.ID), // User ID
+	}
+
+	token := jwt.NewWithClaims(
+		config.JWT_SIGNING_METHOD,
+		claims,
+	)
+
+	signedToken, err := token.SignedString(config.JWT_SIGNATURE_KEY)
+	if err != nil {
+		panic(err)
+	}
+	return signedToken
+}
+
 func Login(c *fiber.Ctx) error {
 	var post models.Login
 
@@ -36,22 +57,7 @@ func Login(c *fiber.Ctx) error {
 	}
 
 	// Create JWT token
-	claims := jwt.RegisteredClaims{
-		Issuer:    config.APPLICATION_NAME,
-		ExpiresAt: &jwt.NumericDate{Time: time.Now().Add(config.LOGIN_EXPIRATION_DURATION)},
-		Audience:  jwt.ClaimStrings{config.JWT_ISSUER},
-		Subject:   fmt.Sprintf("%d", user.ID), // User ID
-	}
-
-	token := jwt.NewWithClaims(
-		config.JWT_SIGNING_METHOD,
-		claims,
-	)
-
-	signedToken, err := token.SignedString(config.JWT_SIGNATURE_KEY)
-	if err != nil {
-		panic(err)
-	}
+	signedToken := GetToken(&user)
 
 	// Sent JWT to client
 	return c.Status(200).JSON(fiber.Map{"token": signedToken, "user": user})
